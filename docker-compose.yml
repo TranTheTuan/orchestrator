@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  task-service-migrate:
+    depends_on:
+      - db
+    build: ./src/task-service
+    networks:
+      - taskservice
+    env_file: .env
+    command: ["migration", "migrate"]
+    labels:
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true
+
+  task-service-grpc:
+    depends_on:
+      - db
+    build: ./src/task-service
+    ports:
+      - 9090:9090
+    networks:
+      - taskservice
+    env_file: .env
+    command: ["serve", "grpc"]
+    labels:
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true
+
+  task-service-http:
+    depends_on:
+      - db
+    build: ./src/task-service
+    ports:
+      - 9091:9091
+    networks:
+      - taskservice
+    env_file: .env
+    command: ["serve", "http"]
+    labels:
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true
+
+  authen-go-migrate:
+    depends_on:
+      - db
+    build: ./src/authen-go
+    networks:
+      - taskservice
+    env_file: .env
+    command: ["migration", "migrate"]
+    labels:
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true
+
+  authen-go-grpc:
+    depends_on:
+      - db
+    build: ./src/authen-go
+    ports:
+      - 8080:8080
+    networks:
+      - taskservice
+    env_file: .env
+    command: ["serve", "grpc"]
+    labels:
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true
+
+  authen-go-http:
+    depends_on:
+      - db
+    build: ./src/authen-go
+    ports:
+      - 8081:8081
+    networks:
+      - taskservice
+    env_file: .env
+    command: ["serve", "http"]
+    labels:
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true
+
+  db:
+    image: mysql
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - taskservice
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - 3306:3306
+    restart: always
+    labels:
+      co.elastic.logs/enabled: false
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:${STACK_VERSION}
+    restart: always
+    ports:
+      - 5601:5601
+    networks:
+      - taskservice
+    labels:
+      co.elastic.logs/enabled: false
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:${STACK_VERSION}
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./volumes/elasticsearch/data:/usr/share/elasticsearch/data
+    networks:
+      - taskservice
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    labels:
+      co.elastic.logs/enabled: false
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat-oss:${STACK_VERSION}
+    user: root
+    volumes:
+      - ./config/filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - taskservice
+    labels:
+      co.elastic.logs/enabled: false
+
+networks:
+  taskservice:
