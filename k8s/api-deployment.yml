@@ -13,13 +13,16 @@ spec:
         component: api
     spec:
       containers:
-        - name: authen-go-grpc
-          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:1.0
-          command: ["serve", "grpc"]
-          ports:
-            - containerPort: 8080
-        - name: authen-go-http
-          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:1.0
-          command: ["serve", "http"]
-          ports:
-            - containerPort: 8081
+      - name: authen-go-grpc
+        image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
+        # command: replace dockerfile's entrypoint
+        command: ["/app", "serve", "grpc"]
+        ports:
+          - containerPort: 8080
+      - name: authen-go-http
+        image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
+        command: ["/app", "serve", "http"]
+        ports:
+          - containerPort: 8081
+      imagePullSecrets:
+      - name: regcred

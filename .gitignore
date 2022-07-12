@@ -1,6 +1,7 @@
 src
 .env
 db
+volumes
 
 **/.vscode
 
