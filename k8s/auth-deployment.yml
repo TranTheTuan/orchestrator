@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: auth
+  template:
+    metadata:
+      labels:
+        component: auth
+    spec:
+      initContainers:
+        - name: authen-go-init
+          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
+          args: ["migration", "migrate"]
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: authen-go-config
+      containers:
+        - name: authen-go-grpc
+          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
+          # args: append args to dockerfile's entrypoint
+          args: ["serve", "grpc"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: authen-go-config
+        - name: authen-go-http
+          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
+          args: ["serve", "http"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: authen-go-config
+      imagePullSecrets:
+      - name: regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authen-go-http
+spec:
+  type: LoadBalancer
+  selector:
+    component: auth
+  ports:
+    - protocol: TCP
+      port: 8081 # port access from outside
+      targetPort: 8081 # port of target container
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authen-go-grpc
+spec:
+  type: ClusterIP
+  selector:
+    component: auth
+  ports:
+    - protocol: TCP
+      port: 8080 # port access from outside
+      targetPort: 8080 # port of target container

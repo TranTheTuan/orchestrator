@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: task
+  template:
+    metadata:
+      labels:
+        component: task
+    spec:
+      initContainers:
+        - name: task-service-init
+          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/task-service:2.0
+          args: ["migration", "migrate"]
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: task-service-config
+      containers:
+        - name: task-service-gprc
+          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/task-service:2.0
+          args: ["serve", "grpc"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+          envFrom:
+            - configMapRef:
+                name: task-service-config
+        - name: task-service-http
+          image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/task-service:2.0
+          args: ["serve", "http"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9091
+          envFrom:
+            - configMapRef:
+                name: task-service-config
+      imagePullSecrets:
+      - name: regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-service-http
+spec:
+  type: NodePort
+  selector:
+    component: task
+  ports:
+    - port: 9091
+      targetPort: 9091
+      nodePort: 30001
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-service-grpc
+spec:
+  type: ClusterIP
+  selector:
+    component: task
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
