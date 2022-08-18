@@ -3,10 +3,8 @@ kind: ConfigMap
 metadata:
   name: authen-go-config
 data:
-  AUTHEN_SYSTEM_MYSQL_USERNAME: admin
-  AUTHEN_SYSTEM_MYSQL_PASSWORD: '12345678'
   AUTHEN_SYSTEM_MYSQL_DATABASE: authentication
-  AUTHEN_SYSTEM_MYSQL_HOST: task-database.c0z6htwdd0jx.us-east-1.rds.amazonaws.com
+  AUTHEN_SYSTEM_MYSQL_HOST: taskdb.c0z6htwdd0jx.us-east-1.rds.amazonaws.com
   AUTHEN_SYSTEM_MYSQL_PORT: '3306'
   AUTHEN_SYSTEM_MYSQL_CHARSET: utf8mb4
   AUTHEN_SYSTEM_MYSQL_LOC: Local
@@ -21,10 +19,8 @@ metadata:
   name: task-service-config
 data:
   # TASK SERVICE CONFIG
-  TASK_SYSTEM_MYSQL_USERNAME: admin
-  TASK_SYSTEM_MYSQL_PASSWORD: '12345678'
   TASK_SYSTEM_MYSQL_DATABASE: task_service
-  TASK_SYSTEM_MYSQL_HOST: task-database.c0z6htwdd0jx.us-east-1.rds.amazonaws.com
+  TASK_SYSTEM_MYSQL_HOST: taskdb.c0z6htwdd0jx.us-east-1.rds.amazonaws.com
   TASK_SYSTEM_MYSQL_PORT: '3306'
   TASK_SYSTEM_MYSQL_CHARSET: utf8mb4
   TASK_SYSTEM_MYSQL_LOC: Local

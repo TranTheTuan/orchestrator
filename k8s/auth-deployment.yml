@@ -18,8 +18,10 @@ spec:
           args: ["migration", "migrate"]
           imagePullPolicy: Always
           envFrom:
-          - configMapRef:
-              name: authen-go-config
+            - configMapRef:
+                name: authen-go-config
+            - secretRef:
+                name: authen-go-secret
       containers:
         - name: authen-go-grpc
           image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
@@ -31,6 +33,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: authen-go-config
+            - secretRef:
+                name: authen-go-secret
         - name: authen-go-http
           image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/authen-go:2.0
           args: ["serve", "http"]
@@ -40,6 +44,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: authen-go-config
+            - secretRef:
+                name: authen-go-secret
       imagePullSecrets:
       - name: regcred
 

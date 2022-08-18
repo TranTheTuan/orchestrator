@@ -18,8 +18,10 @@ spec:
           args: ["migration", "migrate"]
           imagePullPolicy: Always
           envFrom:
-          - configMapRef:
-              name: task-service-config
+            - configMapRef:
+                name: task-service-config
+            - secretRef:
+                name: task-service-secret
       containers:
         - name: task-service-gprc
           image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/task-service:2.0
@@ -30,6 +32,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: task-service-config
+            - secretRef:
+                name: task-service-secret
         - name: task-service-http
           image: 911481394558.dkr.ecr.us-east-1.amazonaws.com/task-app/task-service:2.0
           args: ["serve", "http"]
@@ -39,6 +43,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: task-service-config
+            - secretRef:
+                name: task-service-secret
       imagePullSecrets:
       - name: regcred
 

@@ -6,3 +6,5 @@ volumes
 **/.vscode
 
 .gitconfig.pers
+
+k8s/*-secret.yml
