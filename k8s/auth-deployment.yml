@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    component: api
+  namespace: app-ns
+  annotations:
+    monitoring: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      initContainers:
+        - name: authen-go-init
+          image: asia-southeast1-docker.pkg.dev/concrete-braid-223116/standard-repo/auth-service:v0.0.1
+          args: ["migration", "migrate"]
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: auth-config
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "40Mi"
+            limits:
+              cpu: "50m"
+              memory: "150Mi"
+      containers:
+        - name: authen-go-grpc
+          image: asia-southeast1-docker.pkg.dev/concrete-braid-223116/standard-repo/auth-service:v0.0.1
+          # args: append args to dockerfile's entrypoint
+          args: ["serve", "grpc"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: auth-config
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "40Mi"
+            limits:
+              cpu: "50m"
+              memory: "150Mi"
+        - name: authen-go-http
+          image: asia-southeast1-docker.pkg.dev/concrete-braid-223116/standard-repo/auth-service:v0.0.1
+          args: ["serve", "http"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: auth-config
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "40Mi"
+            limits:
+              cpu: "50m"
+              memory: "150Mi"

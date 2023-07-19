@@ -9,11 +9,11 @@ services:
       - taskservice
     env_file: .env
     command: ["migration", "migrate"]
-    labels:
-      co.elastic.logs/json.keys_under_root: true
-      co.elastic.logs/json.overwrite_keys: true
-      co.elastic.logs/json.add_error_key: true
-      co.elastic.logs/json.expand_keys: true
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
 
   task-service-grpc:
     depends_on:
@@ -25,11 +25,11 @@ services:
       - taskservice
     env_file: .env
     command: ["serve", "grpc"]
-    labels:
-      co.elastic.logs/json.keys_under_root: true
-      co.elastic.logs/json.overwrite_keys: true
-      co.elastic.logs/json.add_error_key: true
-      co.elastic.logs/json.expand_keys: true
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
 
   task-service-http:
     depends_on:
@@ -41,11 +41,11 @@ services:
       - taskservice
     env_file: .env
     command: ["serve", "http"]
-    labels:
-      co.elastic.logs/json.keys_under_root: true
-      co.elastic.logs/json.overwrite_keys: true
-      co.elastic.logs/json.add_error_key: true
-      co.elastic.logs/json.expand_keys: true
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
 
   authen-go-migrate:
     depends_on:
@@ -55,11 +55,11 @@ services:
       - taskservice
     env_file: .env
     command: ["migration", "migrate"]
-    labels:
-      co.elastic.logs/json.keys_under_root: true
-      co.elastic.logs/json.overwrite_keys: true
-      co.elastic.logs/json.add_error_key: true
-      co.elastic.logs/json.expand_keys: true
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
 
   authen-go-grpc:
     depends_on:
@@ -71,11 +71,11 @@ services:
       - taskservice
     env_file: .env
     command: ["serve", "grpc"]
-    labels:
-      co.elastic.logs/json.keys_under_root: true
-      co.elastic.logs/json.overwrite_keys: true
-      co.elastic.logs/json.add_error_key: true
-      co.elastic.logs/json.expand_keys: true
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
 
   authen-go-http:
     depends_on:
@@ -87,14 +87,14 @@ services:
       - taskservice
     env_file: .env
     command: ["serve", "http"]
-    labels:
-      co.elastic.logs/json.keys_under_root: true
-      co.elastic.logs/json.overwrite_keys: true
-      co.elastic.logs/json.add_error_key: true
-      co.elastic.logs/json.expand_keys: true
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
 
   db:
-    image: mysql
+    image: bitnami/mysql:8.0
     volumes:
       - ./db:/var/lib/mysql
     networks:
@@ -103,49 +103,35 @@ services:
       MYSQL_ROOT_PASSWORD: 123456
     ports:
       - 3306:3306
-    restart: always
     labels:
       co.elastic.logs/enabled: false
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana-oss:${STACK_VERSION}
-    restart: always
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
     ports:
-      - 5601:5601
-    networks:
-      - taskservice
-    labels:
-      co.elastic.logs/enabled: false
+      - "24224:24224"
+      - "24224:24224/udp"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.1
+    container_name: elasticsearch
     environment:
-      - discovery.type=single-node
-    volumes:
-      - ./volumes/elasticsearch/data:/usr/share/elasticsearch/data
-    networks:
-      - taskservice
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    labels:
-      co.elastic.logs/enabled: false
+      - "discovery.type=single-node"
+    expose:
+      - "9200"
+    ports:
+      - "9200:9200"
 
-  filebeat:
-    image: docker.elastic.co/beats/filebeat-oss:${STACK_VERSION}
-    user: root
-    volumes:
-      - ./config/filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - taskservice
-    labels:
-      co.elastic.logs/enabled: false
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.1
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
 
 networks:
   taskservice:
