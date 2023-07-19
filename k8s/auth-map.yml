@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+  namespace: app-ns
+data:
+  AUTHEN_SYSTEM_MYSQL_USERNAME: root
+  AUTHEN_SYSTEM_MYSQL_PASSWORD: root
+  AUTHEN_SYSTEM_MYSQL_DATABASE: authentication
+  AUTHEN_SYSTEM_MYSQL_HOST: db-svc
+
