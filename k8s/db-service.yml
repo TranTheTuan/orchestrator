@@ -4,7 +4,6 @@ metadata:
   name: db-svc
   namespace: app-ns
 spec:
-  type: ClusterIP
   selector:
     component: db
   ports:

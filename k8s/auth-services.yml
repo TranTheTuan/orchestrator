@@ -4,7 +4,6 @@ metadata:
   name: auth-svc
   namespace: app-ns
 spec:
-  type: LoadBalancer
   selector:
     component: api
   ports:
