@@ -1,9 +1,10 @@
 name: Update Image Name
 on:
   workflow_call:
-    image:
-      type: string
-      required: true
+    inputs:
+      image:
+        type: string
+        required: true
 
 jobs:
   update_image:
