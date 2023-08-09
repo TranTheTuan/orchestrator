@@ -20,7 +20,7 @@ jobs:
       - name: Update image
         uses: mikefarah/yq@master
         with:
-          cmd: yq '(.spec.template.spec.containers[].image, .spec.template.spec.initContainers[].image) = ${{ inputs.image }}' -i k8s/auth-deployment.yml
+          cmd: cat k8s/auth-deployment.yml | yq '(.spec.template.spec.containers[].image, .spec.template.spec.initContainers[].image) = ${{ inputs.image }}' -i k8s/auth-deployment.yml
 
       - name: Commit change
         uses: stefanzweifel/git-auto-commit-action@v4
