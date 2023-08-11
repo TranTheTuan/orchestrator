@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'TranTheTuan/orchestrator'
+          token: ${{ secrets.PAT }}
 
       - name: Update image
         uses: mikefarah/yq@master
