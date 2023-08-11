@@ -28,4 +28,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: apply image name changes - ${{ inputs.image }}
+          commit_user_name: tuantt
+          commit_user_email: tranthetuan1998hanam@gmail.com
           branch: master
