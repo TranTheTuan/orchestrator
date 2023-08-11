@@ -10,9 +10,6 @@ jobs:
   update_image:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Checking out the code
         uses: actions/checkout@v3
