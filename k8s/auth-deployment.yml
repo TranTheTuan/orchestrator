@@ -19,7 +19,7 @@ spec:
     spec:
       initContainers:
         - name: authen-go-init
-          image: asia-southeast1-docker.pkg.dev/concrete-braid-223116/standard-repo/auth-service:v0.0.1
+          image: ghcr.io/tranthetuan/authen-go:master
           args: ["migration", "migrate"]
           imagePullPolicy: IfNotPresent
           envFrom:
@@ -34,7 +34,7 @@ spec:
               memory: "150Mi"
       containers:
         - name: authen-go-grpc
-          image: asia-southeast1-docker.pkg.dev/concrete-braid-223116/standard-repo/auth-service:v0.0.1
+          image: ghcr.io/tranthetuan/authen-go:master
           # args: append args to dockerfile's entrypoint
           args: ["serve", "grpc"]
           imagePullPolicy: IfNotPresent
@@ -51,7 +51,7 @@ spec:
               cpu: "50m"
               memory: "150Mi"
         - name: authen-go-http
-          image: asia-southeast1-docker.pkg.dev/concrete-braid-223116/standard-repo/auth-service:v0.0.1
+          image: ghcr.io/tranthetuan/authen-go:master
           args: ["serve", "http"]
           imagePullPolicy: IfNotPresent
           ports:
