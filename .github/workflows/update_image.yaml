@@ -5,6 +5,10 @@ on:
       image:
         type: string
         required: true
+    secrets:
+      secretPAT:
+        description: 'Personal access token passed from the caller workflow'
+        required: true
 
 jobs:
   update_image:
@@ -14,13 +18,11 @@ jobs:
       contents: write
 
     steps:
-      - name: debug code
-        run: echo "secret pats ${{ secrets.PAT }}"
       - name: Checking out the code
         uses: actions/checkout@v3
         with:
           repository: 'TranTheTuan/orchestrator'
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.secretPAT }}
 
       - name: Update image
         uses: mikefarah/yq@master
