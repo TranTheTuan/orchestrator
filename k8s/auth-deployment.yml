@@ -23,8 +23,8 @@ spec:
           args: ["migration", "migrate"]
           imagePullPolicy: IfNotPresent
           envFrom:
-            - configMapRef:
-                name: auth-config
+            - secretKeyRef:
+                name: app-secret
           resources:
             requests:
               cpu: "10m"
@@ -41,8 +41,8 @@ spec:
           ports:
             - containerPort: 8080
           envFrom:
-            - configMapRef:
-                name: auth-config
+            - secretKeyRef:
+                name: app-secret
           resources:
             requests:
               cpu: "10m"
@@ -57,8 +57,8 @@ spec:
           ports:
             - containerPort: 8081
           envFrom:
-            - configMapRef:
-                name: auth-config
+            - secretKeyRef:
+                name: app-secret
           resources:
             requests:
               cpu: "10m"
