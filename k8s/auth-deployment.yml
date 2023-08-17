@@ -23,7 +23,7 @@ spec:
           args: ["migration", "migrate"]
           imagePullPolicy: IfNotPresent
           envFrom:
-            - secretKeyRef:
+            - secretRef:
                 name: app-secret
           resources:
             requests:
@@ -41,7 +41,7 @@ spec:
           ports:
             - containerPort: 8080
           envFrom:
-            - secretKeyRef:
+            - secretRef:
                 name: app-secret
           resources:
             requests:
@@ -57,7 +57,7 @@ spec:
           ports:
             - containerPort: 8081
           envFrom:
-            - secretKeyRef:
+            - secretRef:
                 name: app-secret
           resources:
             requests:
