@@ -21,7 +21,7 @@ spec:
         - name: authen-go-init
           image: ghcr.io/tranthetuan/authen-go:master
           args: ["migration", "migrate"]
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: app-secret
@@ -37,7 +37,7 @@ spec:
           image: ghcr.io/tranthetuan/authen-go:master
           # args: append args to dockerfile's entrypoint
           args: ["serve", "grpc"]
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
@@ -53,7 +53,7 @@ spec:
         - name: authen-go-http
           image: ghcr.io/tranthetuan/authen-go:master
           args: ["serve", "http"]
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
           envFrom:
